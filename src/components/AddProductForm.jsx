@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Input from "./index";
+import {Input} from "./index"
 import { useAddProduct } from "../hooks/useAddProuduct";
 
 const AddProductForm = () => {

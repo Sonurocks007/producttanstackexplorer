@@ -12,21 +12,22 @@ const SearchProductForm = ({ data, onSearch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 items-center mb-4 justify-center">
-      <input
+    
+      <div>
+        <input
         type="text"
         placeholder="Search product..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="border border-gray-300 rounded-md px-4 py-2"
       />
-      <button
-        type="submit"
+      <button      
         className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
       >
         Search
       </button>
-    </form>
+    
+      </div>
   );
 };
 

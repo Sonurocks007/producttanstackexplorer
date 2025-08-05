@@ -1,6 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProduct } from "../api/productApi";
 import { toast } from "react-toastify";
+
+let toastShown = false; 
 
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
@@ -14,11 +16,29 @@ export const useDeleteProduct = () => {
       );
 
       console.log("Product was Deleted Successfully, Response:", data);
-      toast.success("Product deleted successfully");
+
+      
+      if (!toastShown) {
+        toast.success("Product deleted successfully");
+        toastShown = true;
+
+        
+        setTimeout(() => {
+          toastShown = false;
+        }, 1000); 
+      }
     },
     onError: (error) => {
       console.error("Error in deleting", error.message);
-      toast.error("Failed to delete product. Please try again.");
+
+      if (!toastShown) {
+        toast.error("Failed to delete product. Please try again.");
+        toastShown = true;
+
+        setTimeout(() => {
+          toastShown = false;
+        }, 3000);
+      }
     },
   });
 };
