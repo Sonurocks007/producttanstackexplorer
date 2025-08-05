@@ -4,6 +4,8 @@ import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaTimes } from "react-icons/fa";
 import AddProductForm from "./AddProductForm";
 import UpdateProductForm from "./UpdateProductForm";
+import Pagination from "../components/pagination/Pagination";
+import { Button } from "./index";
 
 const ProductCard = () => {
   const { data, isLoading, error } = useProducts();
@@ -16,11 +18,9 @@ const ProductCard = () => {
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Filter on search
   useEffect(() => {
     if (data) {
       const filtered = searchQuery.trim()
@@ -30,7 +30,7 @@ const ProductCard = () => {
         : data;
 
       setFilteredData(filtered);
-      setCurrentPage(1); // Reset to first page when search changes
+      setCurrentPage(1);
     }
   }, [searchQuery, data]);
 
@@ -45,51 +45,64 @@ const ProductCard = () => {
       </p>
     );
 
-  
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filteredData.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+  console.log(data);
+  
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6 relative">
-      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-        Products
-      </h1>
+    <div className="bg-gray-200 min-h-screen opacity-95 relative font-sans w-full overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center  gap-4 mt-2 mb-10">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 text-center sm:text-left ml-5">
+          Products Cart
+        </h1>
 
-      <div className="flex justify-center gap-6 mb-8">
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded hover:bg-green-200"
-        >
-          <FaPlus /> Add Product
-        </button>
-
-        <button
-          onClick={() => setShowUpdateForm(true)}
-          className="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-2 rounded hover:bg-yellow-200"
-        >
-          <FaEdit /> Update Product
-        </button>
-
-        <button
-          onClick={() => setShowSearchBar(true)}
-          className="flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded hover:bg-blue-200"
-        >
-          <FaSearch /> Search
-        </button>
+        <div className="flex flex-col sm:flex-row justify-center sm:justify-end gap-4 w-full sm:w-auto mr-5">
+          {showSearchBar ? (
+            <div className="flex gap-2 w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-64 px-4  rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150"
+              />
+              <Button
+                onClick={() => {
+                  setShowSearchBar(false);
+                  setSearchQuery("");
+                }}
+                Icon={<FaTimes size={14} />}
+                className="bg-red-600 hover:bg-red-500 flex items-center justify-center text-white"
+              />
+            </div>
+          ) : (
+            <Button
+              onClick={() => setShowSearchBar(true)}
+              Icon={<FaSearch size={14} />}
+              className="flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white "
+            />
+          )}
+          <Button
+            onClick={() => setShowAddForm(true)}
+            title="Add Product"
+            Icon={<FaPlus size={14} />}
+            className="bg-green-600 hover:bg-green-500 flex items-center justify-center text-white"
+          />
+        </div>
       </div>
 
-      {(showAddForm || showUpdateForm || showSearchBar) && (
-        <div className="absolute top-0 left-0 w-full h-full bg-opacity-30 flex justify-center items-start pt-20 z-10">
+      {(showAddForm || showUpdateForm) && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-900/40 z-10">
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-lg relative">
             <button
               onClick={() => {
                 setShowAddForm(false);
                 setShowUpdateForm(false);
-                setShowSearchBar(false);
               }}
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600"
             >
@@ -98,7 +111,7 @@ const ProductCard = () => {
 
             {showAddForm && (
               <>
-                <h2 className="text-lg font-semibold mb-4 text-green-700">
+                <h2 className="text-xl font-semibold mb-4 text-green-600">
                   Add Product
                 </h2>
                 <AddProductForm />
@@ -107,70 +120,56 @@ const ProductCard = () => {
 
             {showUpdateForm && (
               <>
-                <h2 className="text-lg font-semibold mb-4 text-yellow-700">
+                <h2 className="text-xl font-semibold mb-4 text-yellow-600">
                   Update Product
                 </h2>
                 <UpdateProductForm />
-              </>
-            )}
-
-            {showSearchBar && (
-              <>
-                <h2 className="text-lg font-semibold mb-4 text-blue-700">
-                  Search Product
-                </h2>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter product name"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery("")}
-                      className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-sm rounded-md"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
               </>
             )}
           </div>
         </div>
       )}
 
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="   grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 m-5">
         {paginatedData.length > 0 ? (
           paginatedData.map((product) => (
             <div
               key={product.id}
-              className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition relative"
+              className="bg-white w-full h-[410px] rounded-xl cursor-pointer shadow-md hover:shadow-xl opacity-90 transition duration-300 relative group"
             >
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-48 object-contain rounded-md mb-3"
-              />
-              <h2 className="font-semibold text-md mb-1 line-clamp-2">
-                {product.title}
-              </h2>
-              <p className="text-sm text-gray-500 capitalize">
-                {product.category}
-              </p>
-              <p className="text-lg font-bold text-green-600 mt-1">
-                US${product.price}
-              </p>
-
-              <div className="absolute top-2 right-2 flex gap-2">
+              <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition">
                 <button
                   onClick={() => deleteProduct(product.id)}
-                  className="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-full transition"
+                  className="bg-red-600 hover:bg-red-500 text-white rounded-full p-2"
                 >
-                  <FaTrash />
+                  <FaTrash size={14} />
                 </button>
+                <button
+                  onClick={() => setShowUpdateForm(true)}
+                  className="bg-yellow-500 hover:bg-yellow-400 text-white rounded-full p-2"
+                >
+                  <FaEdit size={14} />
+                </button>
+              </div>
+
+              <div className="aspect-video  flex items-center justify-center">
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className=" size-70 object-contain shadow-gray-300 backdrop:blur-sm rounded-2xl mt-1 mb-1"
+                />
+              </div>
+
+              <div className="w-full  rounded-3xl mt-1 mb-6 p-2">
+                <h2 className="font-bold  text-md mb-1 line-clamp-2 text-gray-800">
+                  {product.title}
+                </h2>
+                <p className="font-semibold text-sm text-gray-400 capitalize">
+                  {product.category}
+                </p>
+                <p className="text-lg font-bold text-gray-800 mt-1">
+                  US${product.price}
+                </p>
               </div>
             </div>
           ))
@@ -182,37 +181,11 @@ const ProductCard = () => {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center mt-8 gap-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          {[...Array(totalPages).keys()].map((pageNum) => (
-            <button
-              key={pageNum + 1}
-              onClick={() => setCurrentPage(pageNum + 1)}
-              className={`px-4 py-2 rounded ${
-                currentPage === pageNum + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              {pageNum + 1}
-            </button>
-          ))}
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       )}
     </div>
   );
